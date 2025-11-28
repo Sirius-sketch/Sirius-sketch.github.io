@@ -3,7 +3,7 @@ layout: default
 title: 首页
 ---
 
-## all the note
+## notes
 
 <ul>
   {% for post in site.posts %}
