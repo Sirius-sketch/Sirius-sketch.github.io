@@ -16,41 +16,55 @@ title: 首页
 <script>
   (function() {
     // ================= 配置区域 =================
-    // 在这里修改你的农历生日（数字）
+    // 修改为：农历十月二十三
     var myLunarMonth = 10;  // 农历月份
-    var myLunarDay = 23;    // 农历日期
+    var myLunarDay = 24;    // 农历日期
     // ===========================================
 
     function getDaysUntilBirthday() {
       var now = new Date();
+      // 获取当前农历年份
       var solar = Solar.fromDate(now);
-      var currentYear = solar.getLunar().getYear();
+      var currentLunarYear = solar.getLunar().getYear();
       
-      // 1. 先尝试获取今年的农历生日对应的阳历日期
-      var birthdayLunar = Lunar.fromYmd(currentYear, myLunarMonth, myLunarDay);
+      // 1. 获取“今年”该农历生日对应的阳历日期
+      var birthdayLunar = Lunar.fromYmd(currentLunarYear, myLunarMonth, myLunarDay);
       var birthdaySolar = birthdayLunar.getSolar();
       var birthdayDate = new Date(birthdaySolar.getYear(), birthdaySolar.getMonth() - 1, birthdaySolar.getDay());
 
-      // 2. 如果今年的农历生日已经过了（或者是今天），就计算明年的
-      // 注意：这里简单判断时间戳。如果想包含“今天”，逻辑可以微调
-      if (now.getTime() > birthdayDate.getTime() + (24 * 60 * 60 * 1000)) {
-        // 获取下一年（注意：农历年+1，需要重新计算对应的阳历）
-        // 这里的逻辑稍微复杂，因为单纯年份+1可能不准确，直接推算下一个农历年
-        var nextLunarYear = currentYear + 1;
+      // 为了防止“今天就是生日”时被误判为明年，我们将比较时间设为当天的23:59:59之后
+      // 或者简单地比较：如果 当前时间 > 今年的生日日期（已过），则算明年
+      // 注意：这里需要把 birthdayDate 设为当天的结束，或者只比较日期部分。
+      // 为简单起见，如果 birthdayDate 在“昨天”或更早，就算明年。
+      
+      // 设置生日当天的 23:59:59 用于比较，确保生日当天显示 0 天而不是明年
+      birthdayDate.setHours(23, 59, 59, 999);
+
+      if (now.getTime() > birthdayDate.getTime()) {
+        // 如果今年的生日已经过完了（比如昨天刚过），则计算明年的农历生日
+        var nextLunarYear = currentLunarYear + 1;
         birthdayLunar = Lunar.fromYmd(nextLunarYear, myLunarMonth, myLunarDay);
         birthdaySolar = birthdayLunar.getSolar();
+        // 重置为当年的阳历日期对象
         birthdayDate = new Date(birthdaySolar.getYear(), birthdaySolar.getMonth() - 1, birthdaySolar.getDay());
+        // 重置时间为0点，方便计算天数差
+        birthdayDate.setHours(0, 0, 0, 0);
+      } else {
+        // 如果还没过（或者就是今天），重置时间为0点
+        birthdayDate.setHours(0, 0, 0, 0);
       }
 
-      // 3. 计算差距
-      var diffTime = Math.abs(birthdayDate - now);
+      // 计算当前时间（去掉时分秒干扰）
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // 计算差距
+      var diffTime = birthdayDate.getTime() - today.getTime();
       var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
       
-      // 如果计算出来是0，说明就是今天（视具体需求，这里向上取整通常会显示1或者0）
       return diffDays; 
     }
 
-    // 运行并在页面显示
     try {
       var days = getDaysUntilBirthday();
       document.getElementById('day-count').innerText = days;
