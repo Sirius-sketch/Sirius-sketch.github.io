@@ -5,9 +5,13 @@ title: 首页
 
 <div id="lunar-countdown" style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; text-align: center; margin: 20px 0; font-family: sans-serif;">
   <h3 style="margin: 0; color: #333;">🎂 咪咪生日倒计时</h3>
-  <p style="font-size: 1.2em; color: #666;">
+  <p style="font-size: 1.2em; color: #666; margin-bottom: 5px;">
     离亲爱的咪咪下一次生日还有：
     <span id="day-count" style="font-size: 2em; color: #d9534f; font-weight: bold;">--</span> 天
+  </p>
+  
+  <p style="color: #1E90FF; font-size: 1.1em; font-weight: bold; margin-top: 10px;">
+    永远年轻的好妈妈，天天开心！Happy forever！🎉
   </p>
 </div>
 
@@ -18,7 +22,7 @@ title: 首页
     // ================= 配置区域 =================
     // 修改为：农历十月二十三
     var myLunarMonth = 10;  // 农历月份
-    var myLunarDay = 24;    // 农历日期
+    var myLunarDay = 23;    // 农历日期
     // ===========================================
 
     function getDaysUntilBirthday() {
